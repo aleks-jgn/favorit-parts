@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ru" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Поиск автозапчастей по артикулу: производители, аналоги, цены и остатки на складах."
+    />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Подбор запчастей по артикулу</title>
+    <script>
+      // Выставляет тему до первой отрисовки, чтобы страница не мигала светлым при тёмной теме.
+      (function () {
+        try {
+          var saved = localStorage.getItem('theme');
+          var theme =
+            saved === 'light' || saved === 'dark'
+              ? saved
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light';
+          document.documentElement.setAttribute('data-bs-theme', theme);
+        } catch (error) {
+          /* localStorage или matchMedia недоступны: остаётся светлая тема */
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

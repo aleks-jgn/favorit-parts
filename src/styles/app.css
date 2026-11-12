@@ -1,0 +1,998 @@
+/*
+ * Дизайн-токены и стили приложения поверх Bootstrap 5.3.
+ *
+ * Идея: интерфейс прилавка с запчастями. Главный элемент на странице: поле артикула в виде
+ * номерного знака, с оранжевой торцевой планкой. Остальное намеренно спокойное:
+ * холодные нейтральные поверхности, один сигнальный акцент, цифры и артикулы моноширинным шрифтом.
+ *
+ * Темой управляет атрибут data-bs-theme на <html>. Bootstrap использует его для своих компонентов,
+ * а токены ниже переопределяют общие переменные Bootstrap, чтобы всё выглядело как одно целое.
+ */
+
+/* ---------- Токены ---------- */
+
+:root,
+:root[data-bs-theme='light'] {
+  --app-bg: #eef1f3;
+  --app-surface: #ffffff;
+  --app-surface-2: #f5f7f8;
+  --app-ink: #0e1a24;
+  --app-muted: #566673;
+  --app-line: #d6dde2;
+  --app-plate: #0e1a24;
+
+  --app-accent: #ff6b1a;
+  --app-accent-hover: #ff8340;
+  --app-accent-active: #e85d0e;
+  --app-accent-ink: #0e1a24;
+  --app-accent-soft: #fff1e8;
+  --app-accent-text: #b13f00;
+  --app-accent-rgb: 255, 107, 26;
+
+  --app-ok: #17794f;
+  --app-ok-soft: #e2f3ea;
+  --app-off-soft: #eceff2;
+  --app-danger-text: #b42318;
+
+  --app-shadow: 0 1px 2px rgb(14 26 36 / 0.06), 0 10px 28px -14px rgb(14 26 36 / 0.22);
+
+  --app-font:
+    'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+  --app-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+:root[data-bs-theme='dark'] {
+  --app-bg: #0b131a;
+  --app-surface: #121d26;
+  --app-surface-2: #182530;
+  --app-ink: #e8eef2;
+  --app-muted: #98a9b5;
+  --app-line: #25353f;
+  --app-plate: #c7d4dc;
+
+  --app-accent: #ff7a2e;
+  --app-accent-hover: #ff9150;
+  --app-accent-active: #f0691a;
+  --app-accent-ink: #0e1a24;
+  --app-accent-soft: #2b1e15;
+  --app-accent-text: #ff9a5c;
+  --app-accent-rgb: 255, 122, 46;
+
+  --app-ok: #4cc38a;
+  --app-ok-soft: #12281f;
+  --app-off-soft: #1a2832;
+  --app-danger-text: #ff8f85;
+
+  --app-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 14px 32px -16px rgb(0 0 0 / 0.65);
+}
+
+/* Общие переменные Bootstrap подтягиваем к токенам, чтобы его компоненты менялись вместе с темой. */
+:root[data-bs-theme] {
+  --bs-body-bg: var(--app-bg);
+  --bs-body-color: var(--app-ink);
+  --bs-body-font-family: var(--app-font);
+  --bs-border-color: var(--app-line);
+  --bs-link-color-rgb: var(--app-accent-rgb);
+}
+
+/* ---------- База ---------- */
+
+body {
+  background: var(--app-bg);
+  color: var(--app-ink);
+  font-family: var(--app-font);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+:where(button, input, a):focus-visible {
+  outline: 3px solid var(--app-accent);
+  outline-offset: 2px;
+}
+
+.app-container {
+  width: min(100% - 2rem, 64rem);
+  margin-inline: auto;
+}
+
+.part-number {
+  font-family: var(--app-mono);
+  font-weight: 500;
+  font-size: 0.9em;
+  letter-spacing: 0.01em;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Шапка ---------- */
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 0 0.5rem;
+}
+
+.brandmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.brandmark__icon {
+  color: var(--app-accent);
+}
+
+.theme-toggle {
+  appearance: none;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 1px solid var(--app-line);
+  border-radius: 50%;
+  background: var(--app-surface);
+  color: var(--app-ink);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.25s ease,
+    transform 0.1s ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--app-muted);
+}
+
+.theme-toggle:active {
+  transform: scale(0.94);
+}
+
+.theme-toggle__icon {
+  position: relative;
+  display: block;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.theme-toggle__icon svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transition:
+    transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    opacity 0.25s ease;
+}
+
+.theme-toggle__icon[data-mode='light'] .theme-toggle__sun {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.4);
+}
+
+.theme-toggle__icon[data-mode='dark'] .theme-toggle__moon {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.4);
+}
+
+/* ---------- Заголовок страницы ---------- */
+
+.hero {
+  padding: 1.75rem 0 1.5rem;
+  max-width: 40rem;
+}
+
+.hero__title {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.875rem, 1.2rem + 3vw, 3rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.hero__lead {
+  margin: 0;
+  max-width: 34rem;
+  color: var(--app-muted);
+  font-size: 1.0625rem;
+}
+
+/* ---------- Плашка поиска ---------- */
+
+.plate {
+  padding: 1.25rem;
+  border: 1px solid var(--app-line);
+  border-radius: 1.25rem;
+  background: var(--app-surface);
+  box-shadow: var(--app-shadow);
+  transition: background-color 0.25s ease;
+}
+
+.plate__form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.plate__field {
+  display: flex;
+  flex: 1 1 18rem;
+  align-items: stretch;
+  min-width: 0;
+  overflow: hidden;
+  border: 2px solid var(--app-plate);
+  border-radius: 0.875rem;
+  background: var(--app-surface);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.plate__field:focus-within {
+  border-color: var(--app-accent);
+  box-shadow: 0 0 0 4px rgba(var(--app-accent-rgb), 0.25);
+}
+
+.plate__cap {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 3.25rem;
+  background: var(--app-accent);
+  color: var(--app-accent-ink);
+}
+
+.plate__input.form-control {
+  flex: 1;
+  min-width: 0;
+  padding: 0.75rem 1rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--app-ink);
+  font-family: var(--app-mono);
+  font-size: clamp(1.25rem, 1rem + 1.5vw, 1.75rem);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-overflow: ellipsis;
+}
+
+.plate__input.form-control:focus {
+  background: transparent;
+  box-shadow: none;
+  color: var(--app-ink);
+  outline: none;
+}
+
+.plate__input.form-control::placeholder {
+  color: var(--app-muted);
+  font-family: var(--app-font);
+  font-size: 0.8em;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: inherit;
+  opacity: 0.8;
+}
+
+.plate__clear {
+  appearance: none;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 3rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--app-muted);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.plate__clear:hover {
+  color: var(--app-ink);
+}
+
+.btn-accent {
+  --bs-btn-color: var(--app-accent-ink);
+  --bs-btn-bg: var(--app-accent);
+  --bs-btn-border-color: var(--app-accent);
+  --bs-btn-hover-color: var(--app-accent-ink);
+  --bs-btn-hover-bg: var(--app-accent-hover);
+  --bs-btn-hover-border-color: var(--app-accent-hover);
+  --bs-btn-active-color: var(--app-accent-ink);
+  --bs-btn-active-bg: var(--app-accent-active);
+  --bs-btn-active-border-color: var(--app-accent-active);
+  --bs-btn-disabled-color: var(--app-accent-ink);
+  --bs-btn-disabled-bg: var(--app-accent);
+  --bs-btn-disabled-border-color: var(--app-accent);
+  --bs-btn-focus-shadow-rgb: var(--app-accent-rgb);
+}
+
+.plate__submit {
+  min-width: 8.5rem;
+  padding-inline: 1.25rem;
+  border-radius: 0.875rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.5rem;
+}
+
+.plate__error {
+  margin: 0.625rem 0 0;
+  color: var(--app-danger-text);
+  font-size: 0.9375rem;
+}
+
+.examples {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.875rem;
+  color: var(--app-muted);
+  font-size: 0.9375rem;
+}
+
+.chip {
+  appearance: none;
+  padding: 0.125rem 0.75rem;
+  border: 1px solid var(--app-line);
+  border-radius: 999px;
+  background: var(--app-surface-2);
+  color: var(--app-ink);
+  font-family: var(--app-mono);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.chip:hover:not(:disabled) {
+  border-color: var(--app-accent);
+  background: var(--app-accent-soft);
+}
+
+.chip:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+/* ---------- Этапы ---------- */
+
+.steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0;
+  margin: 1.25rem 0 0;
+  padding: 1rem 0 0;
+  border-top: 1px solid var(--app-line);
+  list-style: none;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  color: var(--app-muted);
+  font-weight: 500;
+}
+
+.step + .step::before {
+  content: '';
+  width: 2.25rem;
+  height: 2px;
+  margin-inline: 0.75rem;
+  background: var(--app-line);
+}
+
+.step__num {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 1.625rem;
+  height: 1.625rem;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease;
+}
+
+.step[data-state='current'] {
+  color: var(--app-ink);
+}
+
+.step[data-state='current'] .step__num {
+  border-color: var(--app-accent);
+  background: var(--app-accent);
+  color: var(--app-accent-ink);
+}
+
+.step[data-state='done'] {
+  color: var(--app-ok);
+}
+
+/* ---------- Секции результатов ---------- */
+
+.results {
+  margin-top: 2.25rem;
+  scroll-margin-top: 1rem;
+}
+
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1.5rem;
+  margin-bottom: 0.875rem;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.section-meta {
+  margin: 0;
+  color: var(--app-muted);
+  font-size: 0.9375rem;
+}
+
+.section-meta strong {
+  color: var(--app-ink);
+  font-weight: 600;
+}
+
+.section-note {
+  margin: 0.875rem 0 0;
+  max-width: 48rem;
+  color: var(--app-muted);
+  font-size: 0.9375rem;
+}
+
+/* ---------- Производители ---------- */
+
+.brand-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Единственная автоматическая анимация: результаты поиска появляются друг за другом. */
+.brand-grid > li {
+  display: flex;
+  animation: option-in 0.32s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(min(var(--i, 0), 10) * 28ms);
+}
+
+@keyframes option-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.brand-option {
+  --stripe: var(--app-line);
+
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.875rem 1rem 0.875rem 1.25rem;
+  border: 1px solid var(--app-line);
+  border-radius: 0.875rem;
+  background: var(--app-surface);
+  box-shadow: inset 4px 0 0 var(--stripe);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.1s ease;
+}
+
+.brand-option[data-in-stock='true'] {
+  --stripe: var(--app-ok);
+}
+
+.brand-option:hover {
+  border-color: var(--app-muted);
+}
+
+.brand-option:active {
+  transform: scale(0.99);
+}
+
+.brand-option[aria-pressed='true'] {
+  --stripe: var(--app-accent);
+
+  border-color: var(--app-accent);
+  background: var(--app-accent-soft);
+  box-shadow:
+    inset 4px 0 0 var(--stripe),
+    0 0 0 1px var(--app-accent);
+}
+
+.brand-option[data-in-stock='false'] .brand-option__name {
+  color: var(--app-muted);
+}
+
+.brand-option__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.brand-option__name {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.brand-option__check {
+  flex: none;
+  color: var(--app-accent-text);
+}
+
+.brand-option__part {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--app-muted);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.brand-option__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.375rem 0.75rem;
+  margin-top: auto;
+}
+
+.brand-option--skeleton {
+  min-height: 7rem;
+  cursor: default;
+}
+
+.brand-option--skeleton:hover {
+  border-color: var(--app-line);
+}
+
+/* ---------- Остаток и метки ---------- */
+
+.stock-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.625rem;
+  border-radius: 999px;
+  background: var(--app-off-soft);
+  color: var(--app-muted);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.stock-pill[data-state='in'] {
+  background: var(--app-ok-soft);
+  color: var(--app-ok);
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.0625rem 0.5rem;
+  border-radius: 0.375rem;
+  background: var(--app-off-soft);
+  color: var(--app-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.tag--accent {
+  background: var(--app-accent);
+  color: var(--app-accent-ink);
+}
+
+.tag--own {
+  margin-left: 0.5rem;
+  background: var(--app-ok-soft);
+  color: var(--app-ok);
+}
+
+/* ---------- Таблица предложений ---------- */
+
+.panel {
+  /* position: relative делает контейнер containing block для .visually-hidden (absolute) внутри таблицы,
+     иначе такой элемент не обрезается прокруткой и расширяет страницу на мобильных. */
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--app-line);
+  border-radius: 1rem;
+  background: var(--app-surface);
+  box-shadow: var(--app-shadow);
+}
+
+.panel.table-responsive {
+  overflow-x: auto;
+}
+
+.offers-table,
+.warehouses__table {
+  --bs-table-bg: transparent;
+  --bs-table-color: var(--app-ink);
+  --bs-table-border-color: var(--app-line);
+
+  margin: 0;
+}
+
+.offers-table thead th,
+.warehouses__table thead th {
+  background: var(--app-surface-2);
+  color: var(--app-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.offers-table th,
+.offers-table td {
+  padding: 0.875rem 1rem;
+}
+
+.offers-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.offer-row[data-kind='requested'] td {
+  background: var(--app-accent-soft);
+}
+
+.offer-name {
+  min-width: 10rem;
+  font-weight: 500;
+}
+
+.offer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.625rem;
+  margin-top: 0.125rem;
+  color: var(--app-muted);
+  font-size: 0.875rem;
+}
+
+.offer-brand {
+  color: var(--app-ink);
+  font-weight: 500;
+}
+
+.price {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.price__from {
+  color: var(--app-muted);
+  font-weight: 400;
+}
+
+.offer-toggle-cell {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.row-toggle {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--app-muted);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.row-toggle:hover {
+  border-color: var(--app-line);
+  color: var(--app-ink);
+}
+
+.row-toggle svg {
+  transition: transform 0.2s ease;
+}
+
+.row-toggle[aria-expanded='true'] svg {
+  transform: rotate(180deg);
+}
+
+/* Раскрытие склада отвечает на действие пользователя, поэтому анимировано. */
+.offer-details td {
+  /* max-width: 0 не даёт широкой вложенной таблице складов растягивать колонки всей таблицы;
+     при нехватке места прокручивается сама таблица складов. */
+  max-width: 0;
+  padding: 0;
+  background: var(--app-surface-2);
+}
+
+.warehouses {
+  position: relative;
+  padding: 0.25rem 1rem 0.75rem;
+  animation: details-in 0.22s ease both;
+}
+
+@keyframes details-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.warehouses__table {
+  font-size: 0.875rem;
+}
+
+.warehouses__table thead th {
+  background: transparent;
+}
+
+.warehouses__table th,
+.warehouses__table td {
+  padding: 0.5rem 0.5rem;
+  background: transparent;
+}
+
+.warehouses__table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.warehouse-code {
+  font-weight: 500;
+}
+
+.shipment__date {
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+.shipment__note {
+  margin-left: 0.5rem;
+  color: var(--app-muted);
+}
+
+/* ---------- Состояния: загрузка, ошибка, пусто ---------- */
+
+.skeleton-line {
+  height: 0.875rem;
+  border-radius: 0.375rem;
+  color: var(--app-muted);
+}
+
+.brand-option--skeleton .skeleton-line {
+  display: block;
+}
+
+.skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.125rem 1rem;
+  border-bottom: 1px solid var(--app-line);
+}
+
+.skeleton-row:last-child {
+  border-bottom: 0;
+}
+
+.skeleton-row__name {
+  flex: 1 1 auto;
+  max-width: 55%;
+}
+
+.skeleton-row__price {
+  flex: 0 0 5rem;
+  margin-left: auto;
+}
+
+.skeleton-row__stock {
+  flex: 0 0 4rem;
+}
+
+.status-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  margin: 0;
+  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+}
+
+.status-card__icon {
+  flex: none;
+  margin-top: 0.125rem;
+}
+
+.status-card__title {
+  margin: 0 0 0.125rem;
+  font-weight: 600;
+}
+
+.status-card__text {
+  margin: 0 0 0.75rem;
+}
+
+.status-card__text:last-child {
+  margin-bottom: 0;
+}
+
+.empty-state {
+  padding: 2.5rem 1.5rem;
+  border: 1px dashed var(--app-line);
+  border-radius: 1rem;
+  color: var(--app-muted);
+  text-align: center;
+}
+
+.empty-state__title {
+  margin: 0.5rem 0 0.25rem;
+  color: var(--app-ink);
+  font-weight: 600;
+}
+
+.empty-state__text {
+  max-width: 30rem;
+  margin: 0 auto;
+}
+
+/* ---------- Подвал ---------- */
+
+.app-footer {
+  margin-top: 3rem;
+  padding: 1.5rem 0 2.5rem;
+  border-top: 1px solid var(--app-line);
+  color: var(--app-muted);
+  font-size: 0.875rem;
+}
+
+/* ---------- Адаптив ---------- */
+
+@media (max-width: 575.98px) {
+  .plate {
+    padding: 1rem;
+  }
+
+  .plate__submit {
+    width: 100%;
+    padding-block: 0.75rem;
+  }
+
+  .plate__cap {
+    width: 2.75rem;
+  }
+
+  /* На узком экране таблица должна помещаться без горизонтальной прокрутки:
+     название переносится, остальные колонки компактные. */
+  .offers-table th,
+  .offers-table td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .offers-table thead th {
+    font-size: 0.75rem;
+    white-space: normal;
+  }
+
+  .offers-table .tag {
+    white-space: normal;
+  }
+
+  .offers-table .offer-name {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .offers-table .price {
+    font-size: 0.9375rem;
+  }
+
+  .offers-table .stock-pill {
+    max-width: 4.75rem;
+    padding-inline: 0.5rem;
+    border-radius: 0.75rem;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .offers-table .price__from {
+    display: block;
+    font-size: 0.8125rem;
+    line-height: 1.1;
+  }
+
+  .row-toggle {
+    padding-inline: 0.375rem;
+  }
+
+  .warehouses {
+    padding-inline: 0.5rem;
+  }
+
+  .warehouses__table th,
+  .warehouses__table td {
+    padding-inline: 0.375rem;
+  }
+
+  .row-toggle__label {
+    display: none;
+  }
+
+  .shipment__note {
+    display: block;
+    margin-left: 0;
+  }
+
+  .step + .step::before {
+    width: 1.25rem;
+    margin-inline: 0.5rem;
+  }
+}
+
+/* ---------- Пользователи, отключившие анимацию ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-delay: 0ms !important;
+    animation-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}
