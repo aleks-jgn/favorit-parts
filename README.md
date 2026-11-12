@@ -24,11 +24,11 @@ Vitest (тесты логики и стора), ESLint 9, Prettier 3. Docker + n
 
 ## 1. Запуск на своём компьютере (Windows 10)
 
-1. Распакуйте архив `parts-search.zip`, например в `C:\projects\parts-search`.
+1. Распакуйте архив `favorit-parts.zip`, например в `C:\projects\favorit-parts`.
 2. Откройте PowerShell (или «Терминал») и перейдите в папку проекта:
 
    ```powershell
-   cd C:\projects\parts-search
+   cd C:\projects\favorit-parts
    ```
 
 3. Установите зависимости. Команда создаст папку `node_modules` и файл `package-lock.json`:
@@ -126,33 +126,7 @@ src/
 
 ---
 
-## 4. Загрузка в GitHub
-
-1. Создайте на https://github.com/new пустой репозиторий (например, `parts-search`), без README и `.gitignore`.
-2. В папке проекта выполните (подставьте свои данные):
-
-   ```powershell
-   git init
-   git add .
-   git commit -m "Initial commit: parts search app"
-   git branch -M main
-   git remote add origin https://github.com/ВАШ_ЛОГИН/parts-search.git
-   git push -u origin main
-   ```
-
-   Если Git просит представиться: `git config --global user.name "Ваше имя"` и
-   `git config --global user.email "you@example.com"`.
-   При запросе пароля GitHub потребует токен доступа (Personal Access Token) или вход через браузер.
-
-3. Убедитесь, что в репозиторий попали `package-lock.json` (он создан на шаге `npm install` и **должен** быть в git:
-   по нему `npm ci` на сервере ставит те же версии пакетов) и не попали `node_modules`, `dist`, `.env`, `.env.local`
-   (они перечислены в `.gitignore`). Файл `.env.example` в репозитории должен быть, а `.env` с ключом — нет.
-   Проверить до отправки: `git status --ignored` — `.env` должен быть в списке игнорируемых, а команда
-   `git ls-files .env` ничего не выводит.
-
----
-
-## 5. Выкладка на облачный сервер
+## 4. Выкладка на облачный сервер
 
 Приложение собирается в статические файлы; их раздаёт nginx, он же проксирует `/api`.
 Всё это упаковано в `Dockerfile`, поэтому на сервере достаточно Docker.
@@ -176,27 +150,27 @@ src/
    «не задан VITE_FAVORIT_API_KEY»):
 
    ```bash
-   git clone https://github.com/ВАШ_ЛОГИН/parts-search.git
-   cd parts-search
+   git clone https://github.com/ВАШ_ЛОГИН/favorit-parts.git
+   cd favorit-parts
    cp .env.example .env
    nano .env            # впишите VITE_FAVORIT_API_KEY=..., сохраните: Ctrl+O, Enter, выход: Ctrl+X
-   docker build -t parts-search .
+   docker build -t favorit-parts .
    ```
 
    Вместо файла `.env` ключ можно передать аргументом сборки:
-   `docker build --build-arg VITE_FAVORIT_API_KEY=ваш-ключ -t parts-search .`
+   `docker build --build-arg VITE_FAVORIT_API_KEY=ваш-ключ -t favorit-parts .`
 
 4. Запустите контейнер на 80 порту (перезапускается сам после перезагрузки сервера):
 
    ```bash
-   docker run -d --name parts-search --restart unless-stopped -p 80:80 parts-search
+   docker run -d --name favorit-parts --restart unless-stopped -p 80:80 favorit-parts
    ```
 
 5. Откройте `http://IP_СЕРВЕРА` в браузере. Если не открывается — проверьте, что в панели провайдера и в
    файрволе (`ufw status`) разрешён входящий порт 80.
 
 Обновление после изменений в коде: `git pull`, затем
-`docker build -t parts-search .`, `docker rm -f parts-search` и снова `docker run …` из пункта 4.
+`docker build -t favorit-parts .`, `docker rm -f favorit-parts` и снова `docker run …` из пункта 4.
 
 ### Вариант Б. Приложение из GitHub-репозитория в панели облака
 
@@ -222,7 +196,7 @@ GitHub Pages не умеет проксировать запросы, поэто
 
 ---
 
-## 6. Возможные проблемы
+## 5. Возможные проблемы
 
 | Симптом                                               | Что делать                                                                                                                                                    |
 | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -231,10 +205,6 @@ GitHub Pages не умеет проксировать запросы, поэто
 | Порт 5173 занят                                       | Vite сам предложит другой порт, либо `npm run dev -- --port 3000`                                                                                             |
 | «Нет связи с сервисом»                                | Нет интернета или недоступен `api.favorit-parts.ru`. Проверьте, что dev-сервер запущен именно через `npm run dev` (прокси `/api`)                             |
 | «Неверный ключ» / «Не указан ключ»                    | Проверьте `.env` / `.env.local` (есть ли в `.env` значение `VITE_FAVORIT_API_KEY`). После правки перезапустите `npm run dev`; для Docker — пересоберите образ |
-| На сервере сайт открывается, а поиск даёт ошибку      | Проверьте, что сервер выходит в интернет и резолвит `api.favorit-parts.ru`: `docker logs parts-search`, `curl -I https://api.favorit-parts.ru`                |
+| На сервере сайт открывается, а поиск даёт ошибку      | Проверьте, что сервер выходит в интернет и резолвит `api.favorit-parts.ru`: `docker logs favorit-parts`, `curl -I https://api.favorit-parts.ru`                |
 | `npm ci` падает в Docker-сборке                       | В репозитории нет синхронного `package-lock.json`: выполните `npm install` локально и закоммитьте обновлённый файл                                            |
 
-## 7. Что сознательно не входит в приложение
-
-Чтобы не выходить за рамки задания: параметр `info=on` (расширенная информация о товаре), синхронизация поиска с адресной
-строкой, переключатель сортировки, пагинация, серверная часть для скрытия ключа.
