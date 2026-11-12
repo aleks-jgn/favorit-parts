@@ -2,20 +2,18 @@ import { createSlice } from '@reduxjs/toolkit';
 
 export const THEME_STORAGE_KEY = 'theme';
 const THEMES = ['light', 'dark'];
+const DEFAULT_THEME = 'dark';
 
 /**
- * Начальная тема. Её уже выставил inline-скрипт в index.html (сохранённый выбор или системная схема),
- * поэтому читаем результат из атрибута и не дублируем логику. Системная схема нужна как запасной вариант.
+ * Начальная тема. Её уже выставил inline-скрипт в index.html (сохранённый выбор или тёмная по умолчанию),
+ * поэтому читаем результат из атрибута и не дублируем логику.
  */
 function detectInitialTheme() {
   if (typeof document !== 'undefined') {
     const applied = document.documentElement.getAttribute('data-bs-theme');
     if (THEMES.includes(applied)) return applied;
   }
-  if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  }
-  return 'light';
+  return DEFAULT_THEME;
 }
 
 /** Выбор пользователя запоминаем только после явного переключения. */

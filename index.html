@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru" data-bs-theme="light">
+<html lang="ru" data-bs-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,19 +11,15 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>Подбор запчастей по артикулу</title>
     <script>
-      // Выставляет тему до первой отрисовки, чтобы страница не мигала светлым при тёмной теме.
+      // Выставляет тему до первой отрисовки, чтобы страница не мигала другой темой.
+      // По умолчанию тёмная; сохранённый выбор пользователя (кнопка переключения) важнее.
       (function () {
         try {
           var saved = localStorage.getItem('theme');
-          var theme =
-            saved === 'light' || saved === 'dark'
-              ? saved
-              : window.matchMedia('(prefers-color-scheme: dark)').matches
-                ? 'dark'
-                : 'light';
+          var theme = saved === 'light' || saved === 'dark' ? saved : 'dark';
           document.documentElement.setAttribute('data-bs-theme', theme);
         } catch (error) {
-          /* localStorage или matchMedia недоступны: остаётся светлая тема */
+          /* localStorage недоступен: остаётся тёмная тема из атрибута <html> */
         }
       })();
     </script>
